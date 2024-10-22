@@ -24,6 +24,32 @@ public class HotelController {
         return hotelService.getAllHotels();
     }
 
+    //SearchForm
+    @GetMapping("/search")
+    public ResponseEntity<List<Hotel>> searchHotels(
+            @RequestParam(name = "hotelName", required = false) String hotelName,
+            @RequestParam(name = "city", required = false) String city,
+            @RequestParam(name = "startDate", required = false) String startDate,
+            @RequestParam(name = "endDate", required = false) String endDate,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice) {
+
+        try {
+            // Convertir Strings a LocalDate si no son nulos o vacíos
+            LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : null;
+            LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : null;
+
+            // Llamar al método del servicio para obtener los hoteles
+            List<Hotel> hotels = hotelService.searchHotel(hotelName, city, minPrice, maxPrice, start, end);
+
+            // Devolver la lista de hoteles en un ResponseEntity con estado 200 OK
+            return new ResponseEntity<>(hotels, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // Si ocurre un error, devolver un ResponseEntity con un estado 500 y el mensaje de error
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     // Endpoint to create a new hotel
     @PostMapping
     public ResponseEntity<Hotel> createHotel(@RequestBody Hotel hotel) {
