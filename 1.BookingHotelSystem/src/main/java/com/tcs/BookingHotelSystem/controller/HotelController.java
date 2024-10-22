@@ -47,14 +47,19 @@ public class HotelController {
 
     // Endpoint to delete a hotel by its ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteHotelById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteHotelById(@PathVariable int id) {
         try {
-            // Call the service to delete the hotel
             String result = hotelService.deleteHotelById(id);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            if (result.contains("was deleted")) {
+                // Return 204 No Content if deletion was successful
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                // If the hotel was not found, return 404 Not Found
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
             // Return error response in case of failure
-            return new ResponseEntity<>("Error deleting hotel.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

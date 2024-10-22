@@ -1,17 +1,17 @@
 <div class="container mx-auto p-4">
   <h1 class="text-2xl mb-4">Lista de Hoteles</h1>
 
-  <!-- Muestra el estado de carga -->
+  <!-- Muestra el indicador de carga -->
   <div *ngIf="isLoading" class="text-center">
-    Cargando hoteles...
+    <p>Cargando hoteles...</p>
   </div>
 
-  <!-- Muestra mensaje cuando no hay hoteles -->
+  <!-- Si no hay hoteles y no está cargando -->
   <div *ngIf="!isLoading && hotels.length === 0" class="text-center">
-    No se encontraron hoteles.
+    <p>No se encontraron hoteles.</p>
   </div>
 
-  <!-- Muestra la tabla cuando hay hoteles y no está cargando -->
+  <!-- Si hay hoteles -->
   <div *ngIf="!isLoading && hotels.length > 0">
     <table class="table-auto w-full border-collapse border border-gray-400">
       <thead>
@@ -30,12 +30,8 @@
           <td class="border border-gray-400 p-2">{{ hotel.checkinDate | date }}</td>
           <td class="border border-gray-400 p-2">{{ hotel.pricePerNight | currency }}</td>
           <td class="border border-gray-400 p-2">
-            <button (click)="editHotel(hotel)" class="bg-blue-500 text-white p-2 rounded">
-              Editar
-            </button>
-            <button (click)="deleteHotel(hotel.id)" class="bg-red-500 text-white p-2 rounded ml-2">
-              Eliminar
-            </button>
+            <button (click)="editHotel(hotel)" class="bg-blue-500 text-white p-2 rounded">Editar</button>
+            <button (click)="deleteHotel(hotel.id)" class="bg-red-500 text-white p-2 rounded ml-2">Eliminar</button>
           </td>
         </tr>
       </tbody>
