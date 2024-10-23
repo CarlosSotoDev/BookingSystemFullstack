@@ -11,18 +11,22 @@ export class HotelService {
 
   constructor(private http: HttpClient) {}
 
+  // Obtener todos los hoteles
   getAllHotels(): Observable<Hotel[]> {
     return this.http.get<Hotel[]>(this.apiUrl);
   }
 
+  // Crear un nuevo hotel
   createHotel(hotel: Hotel): Observable<Hotel> {
     return this.http.post<Hotel>(this.apiUrl, hotel);
   }
 
+  // Eliminar un hotel
   deleteHotel(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, { observe: 'response' });
   }
 
+  // Buscar hoteles con filtros opcionales
   searchHotels(
     hotelName?: string,
     city?: string,
@@ -43,4 +47,10 @@ export class HotelService {
 
     return this.http.get<Hotel[]>(`${this.apiUrl}/search`, { params });
   }
+
+  // Actualizar un hotel existente
+  updateHotel(id: number, hotel: Hotel): Observable<Hotel> {
+    return this.http.put<Hotel>(`${this.apiUrl}/${id}`, hotel);
+  }
+  
 }

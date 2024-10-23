@@ -95,20 +95,20 @@ public class HotelController {
             @PathVariable int id,
             @RequestBody Hotel hotelRequest) {
         try {
-            // Call the service to update the hotel
-            String result = hotelService.updateHotel(
-                    id, hotelRequest.getHotelName(),
+            // Llama al servicio para actualizar el hotel
+            String result = hotelService.updateHotel(id,
+                    hotelRequest.getHotelName(),
                     hotelRequest.getCity(),
                     hotelRequest.getCheckinDate(),
-                    hotelRequest.getPricePerNight()
-            );
-            if (result.contains("successfully updated")) {
+                    hotelRequest.getPricePerNight());
+
+            // Verifica si se ha actualizado correctamente
+            if (result.contains("was updated")) {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            // Return an error response in case of failure
             return new ResponseEntity<>("Error updating hotel.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
