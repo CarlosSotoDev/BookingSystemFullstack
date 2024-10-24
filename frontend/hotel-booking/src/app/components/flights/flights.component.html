@@ -1,59 +1,118 @@
 <div class="container mx-auto p-4">
-  <h1 class="text-2xl mb-4">Lista de Vuelos</h1>
+  <h1 class="text-2xl font-bold mb-4">Lista de Vuelos</h1>
 
-  <!-- Botón para crear un nuevo registro -->
-  <div class="mb-4">
-    <button class="bg-green-500 text-white p-2 rounded">Crear Registro</button>
-  </div>
-
-  <!-- Barra de búsqueda y botón de buscar alineados a la izquierda con separación -->
+  <!-- Barra de búsqueda -->
   <div class="mb-4 flex">
     <input
       type="text"
-      placeholder="Buscar HotelName, City, CehckingDate,Price Per Night..."
+      placeholder="Buscar por origen..."
+      [(ngModel)]="searchCityOrigin"
       class="border border-gray-400 p-2 w-1/3 rounded-l"
     />
-    <!-- Ajuste de tamaño -->
-    <button class="bg-blue-500 text-white p-2 ml-2 rounded">Buscar</button>
+    <input
+      type="text"
+      placeholder="Buscar por destino..."
+      [(ngModel)]="searchDestination"
+      class="border border-gray-400 p-2 w-1/3 rounded-l ml-2"
+    />
+    <button
+      (click)="searchFlights()"
+      class="bg-blue-500 text-white p-2 ml-2 rounded"
+    >
+      Buscar
+    </button>
   </div>
 
-  <table class="table-auto w-full border-collapse border border-gray-400">
+  <!-- Botón para crear un nuevo vuelo -->
+  <button (click)="openCreateModal()" class="bg-green-500 text-white p-2 mb-4 rounded">
+    Crear Registro
+  </button>
+
+  <!-- Tabla de vuelos -->
+  <table class="min-w-full bg-white border border-gray-300">
     <thead>
-      <tr class="bg-gray-800 text-white">
-        <th class="border border-gray-400 p-2">CITY ORIGIN</th>
-        <th class="border border-gray-400 p-2">DESTINATION</th>
-        <th class="border border-gray-400 p-2">DEPARTURE DATE</th>
-        <th class="border border-gray-400 p-2">DEPARTURE TIME</th>
-        <th class="border border-gray-400 p-2">PRICE</th>
-        <th class="border border-gray-400 p-2">ACTIONS</th>
+      <tr>
+        <th class="py-2">Origen</th>
+        <th class="py-2">Destino</th>
+        <th class="py-2">Fecha de Salida</th>
+        <th class="py-2">Hora de Salida</th>
+        <th class="py-2">Precio</th>
+        <th class="py-2">Acciones</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let flight of flights$ | async" class="text-center">
-        <td class="border border-gray-400 p-2">{{ flight.cityOrigin }}</td>
-        <td class="border border-gray-400 p-2">{{ flight.destination }}</td>
-        <td class="border border-gray-400 p-2">
-          {{ flight.departureDate | date }}
-        </td>
-        <td class="border border-gray-400 p-2">{{ flight.departureTime }}</td>
-        <td class="border border-gray-400 p-2">
-          {{ flight.price | currency }}
-        </td>
-        <td class="border border-gray-400 p-2">
-          <button
-            class="bg-blue-500 text-white p-2 rounded"
-            (click)="editFlight(flight)"
-          >
+      <tr *ngFor="let flight of flights">
+        <td class="py-2 text-center">{{ flight.cityOrigin }}</td>
+        <td class="py-2 text-center">{{ flight.destination }}</td>
+        <td class="py-2 text-center">{{ flight.departureDate | date }}</td>
+        <td class="py-2 text-center">{{ flight.departureTime }}</td>
+        <td class="py-2 text-center">{{ flight.price | currency }}</td>
+        <td class="py-2 text-center">
+          <button (click)="openEditModal(flight)" class="bg-blue-500 text-white p-2 rounded ml-2">
             Editar
           </button>
-          <button
-            class="bg-red-500 text-white p-2 rounded ml-2"
-            (click)="deleteFlight(flight.id)"
-          >
+          <button (click)="deleteFlight(flight.id)" *ngIf="flight.id" class="bg-red-500 text-white p-2 rounded ml-2">
             Eliminar
           </button>
         </td>
+        
       </tr>
     </tbody>
   </table>
+
+  <!-- Modal para crear un nuevo vuelo -->
+  <div *ngIf="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-lg">
+      <h2 class="text-xl font-bold mb-4">Crear nuevo vuelo</h2>
+      <form>
+        <label>Origen:</label>
+        <input [(ngModel)]="newFlight.cityOrigin" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <label>Destino:</label>
+        <input [(ngModel)]="newFlight.destination" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <label>Fecha de salida:</label>
+        <input [(ngModel)]="newFlight.departureDate" type="date" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <label>Hora de salida:</label>
+        <input [(ngModel)]="newFlight.departureTime" type="time" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <label>Precio:</label>
+        <input [(ngModel)]="newFlight.price" type="number" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <div class="flex justify-end">
+          <button (click)="createFlight()" class="bg-green-500 text-white p-2 rounded">Guardar</button>
+          <button (click)="closeCreateModal()" class="bg-gray-500 text-white p-2 ml-2 rounded">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para editar un vuelo -->
+  <div *ngIf="showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-lg">
+      <h2 class="text-xl font-bold mb-4">Editar vuelo</h2>
+      <form>
+        <label>Origen:</label>
+        <input [(ngModel)]="selectedFlight.cityOrigin" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <label>Destino:</label>
+        <input [(ngModel)]="selectedFlight.destination" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <label>Fecha de salida:</label>
+        <input [(ngModel)]="selectedFlight.departureDate" type="date" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <label>Hora de salida:</label>
+        <input [(ngModel)]="selectedFlight.departureTime" type="time" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <label>Precio:</label>
+        <input [(ngModel)]="selectedFlight.price" type="number" class="border border-gray-300 p-2 mb-4 w-full" />
+
+        <div class="flex justify-end">
+          <button (click)="updateFlight()" class="bg-blue-500 text-white p-2 rounded">Actualizar</button>
+          <button (click)="closeEditModal()" class="bg-gray-500 text-white p-2 ml-2 rounded">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
