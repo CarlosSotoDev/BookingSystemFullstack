@@ -23,6 +23,7 @@ export class FlightsComponent implements OnInit {
   // Variables para modal de creación
   showCreateModal: boolean = false;
   newFlight: Flight = {
+    id: 0,
     cityOrigin: '',
     destination: '',
     departureDate: '',
@@ -62,10 +63,7 @@ export class FlightsComponent implements OnInit {
     this.isLoading = true;
     try {
       this.flights = await firstValueFrom(
-        this.flightService.searchFlights(
-          this.searchCityOrigin,
-          this.searchDestination
-        )
+        this.flightService.searchFlights(this.searchCityOrigin, this.searchDestination)
       );
       this.isLoading = false;
     } catch (error) {
@@ -78,6 +76,7 @@ export class FlightsComponent implements OnInit {
   openCreateModal() {
     this.showCreateModal = true;
     this.newFlight = {
+      id: 0,
       cityOrigin: '',
       destination: '',
       departureDate: '',
@@ -94,19 +93,19 @@ export class FlightsComponent implements OnInit {
   // Crear nuevo vuelo
   async createFlight() {
     try {
-      const createdFlight = await firstValueFrom(
-        this.flightService.createFlight(this.newFlight)
-      );
+      const createdFlight = await firstValueFrom(this.flightService.createFlight(this.newFlight));
       this.flights.push(createdFlight); // Agregar el nuevo vuelo a la lista
-      this.closeCreateModal(); // Cerrar el modal después de crear
+      this.closeCreateModal(); // Cerrar el modal
+      alert('El vuelo se creó correctamente.'); // Mostrar una alerta de éxito
     } catch (error) {
-      console.error('Error creating flight:', error);
+      console.error('Error creando el vuelo:', error);
+      alert('Hubo un problema creando el vuelo.');
     }
   }
 
   // Abrir modal de edición
   openEditModal(flight: Flight) {
-    this.selectedFlight = { ...flight }; // Copiar los datos del vuelo seleccionado
+    this.selectedFlight = { ...flight }; // Copiar los datos del vuelo
     this.showEditModal = true;
   }
 
@@ -120,44 +119,35 @@ export class FlightsComponent implements OnInit {
       departureDate: '',
       departureTime: '',
       price: 0,
-    }; // Limpiar el vuelo seleccionado
+    };
   }
 
   // Actualizar vuelo
   async updateFlight() {
-    if (this.selectedFlight.id !== undefined) {
-      // Verificar si el id no es undefined
+    if (this.selectedFlight.id !== undefined) {  // Verificamos que el ID no sea undefined
       try {
         const updatedFlight = await firstValueFrom(
-          this.flightService.updateFlight(
-            this.selectedFlight.id,
-            this.selectedFlight
-          )
+          this.flightService.updateFlight(this.selectedFlight.id, this.selectedFlight)
         );
-        // Actualizar la lista de vuelos si es necesario
         this.closeEditModal();
+        alert('El vuelo se actualizó correctamente.');
       } catch (error) {
         console.error('Error actualizando el vuelo:', error);
+        alert('Hubo un problema actualizando el vuelo.');
       }
     } else {
-      console.error(
-        'No se pudo actualizar el vuelo porque el ID es indefinido.'
-      );
+      alert('Error: El ID del vuelo no está definido.');
     }
   }
 
   // Eliminar vuelo
-  async deleteFlight(flightId?: number) {
-    if (flightId !== undefined) {
-      // Verificar si el id no es undefined
+  async deleteFlight(flightId?: number) {  // Hacemos que el parámetro sea opcional
+    if (flightId !== undefined) {  // Verificamos que el ID no sea undefined
       try {
-        const response = await firstValueFrom(
-          this.flightService.deleteFlight(flightId)
-        );
+        const response = await firstValueFrom(this.flightService.deleteFlight(flightId));
         if (response.status === 204 || response.status === 200) {
-          this.flights = this.flights.filter(
-            (flight) => flight.id !== flightId
-          );
+          this.flights = this.flights.filter((flight) => flight.id !== flightId);
+          alert('El vuelo fue eliminado exitosamente.');
         } else {
           console.error('No se pudo eliminar el vuelo.');
         }
@@ -165,7 +155,7 @@ export class FlightsComponent implements OnInit {
         console.error('Error eliminando el vuelo:', error);
       }
     } else {
-      console.error('No se pudo eliminar el vuelo porque el ID es indefinido.');
+      alert('Error: El ID del vuelo no está definido.');
     }
   }
 }
