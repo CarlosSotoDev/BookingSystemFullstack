@@ -1,35 +1,51 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'; // HttpClient directamente
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Flight } from '../models/flight.model';  // Modelo
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Flight } from '../models/flight.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FlightService {
-  private apiUrl = 'http://localhost:8762/fligthservice/api/v1/flights'; 
+  private apiUrl = 'http://localhost:8762/fligthservice/api/v1/flights';
 
-  constructor(private http: HttpClient) {}  // HttpClient inyectado
+  constructor(private http: HttpClient) {}
 
-  getFlights(): Observable<Flight[]> {
-    return this.http.get<Flight[]>(this.apiUrl).pipe(
-      catchError((error) => {
-        console.error('Error fetching flights:', error);
-        return of([]);  // Retornar un array vacío en caso de error
-      })
-    );
+  getAllFlights(): Observable<Flight[]> {
+    return this.http.get<Flight[]>(this.apiUrl);
+  }
+
+  createFlight(flight: Flight): Observable<Flight> {
+    return this.http.post<Flight>(this.apiUrl, flight);
   }
 
   deleteFlight(id: number): Observable<any> {
-    const deleteUrl = `${this.apiUrl}/${id}`;
-    return this.http.delete(deleteUrl).pipe(
-      catchError((error) => {
-        console.error('Error deleting flight:', error);
-        return of({ error: true, message: 'Error deleting flight' }); 
-      })
-    );
+    return this.http.delete(`${this.apiUrl}/${id}`, { observe: 'response' });
   }
 
+  searchFlights(
+    cityOrigin?: string,
+    destination?: string,
+    startDate?: string,
+    endDate?: string,
+    departureTime?: string,
+    minPrice?: string,
+    maxPrice?: string
+  ): Observable<Flight[]> {
+    let params = new HttpParams();
 
+    if (cityOrigin) params = params.set('cityOrigin', cityOrigin);
+    if (destination) params = params.set('destination', destination);
+    if (startDate) params = params.set('startDate', startDate);
+    if (endDate) params = params.set('endDate', endDate);
+    if (departureTime) params = params.set('departureTime', departureTime);
+    if (minPrice) params = params.set('minPrice', minPrice);
+    if (maxPrice) params = params.set('maxPrice', maxPrice);
+
+    return this.http.get<Flight[]>(`${this.apiUrl}/search`, { params });
+  }
+
+  updateFlight(id: number, flight: Flight): Observable<Flight> {
+    return this.http.put<Flight>(`${this.apiUrl}/${id}`, flight);
+  }
 }

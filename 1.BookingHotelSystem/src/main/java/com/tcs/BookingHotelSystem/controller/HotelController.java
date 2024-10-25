@@ -24,6 +24,32 @@ public class HotelController {
         return hotelService.getAllHotels();
     }
 
+    //SearchForm
+    @GetMapping("/search")
+    public ResponseEntity<List<Hotel>> searchHotels(
+            @RequestParam(name = "hotelName", required = false) String hotelName,
+            @RequestParam(name = "city", required = false) String city,
+            @RequestParam(name = "startDate", required = false) String startDate,
+            @RequestParam(name = "endDate", required = false) String endDate,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice) {
+
+        try {
+            // Convertir Strings a LocalDate si no son nulos o vacíos
+            LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : null;
+            LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : null;
+
+            // Llamar al método del servicio para obtener los hoteles
+            List<Hotel> hotels = hotelService.searchHotel(hotelName, city, minPrice, maxPrice, start, end);
+
+            // Devolver la lista de hoteles en un ResponseEntity con estado 200 OK
+            return new ResponseEntity<>(hotels, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // Si ocurre un error, devolver un ResponseEntity con un estado 500 y el mensaje de error
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     // Endpoint to create a new hotel
     @PostMapping
     public ResponseEntity<Hotel> createHotel(@RequestBody Hotel hotel) {
@@ -47,14 +73,19 @@ public class HotelController {
 
     // Endpoint to delete a hotel by its ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteHotelById(@PathVariable int id) {
+    public ResponseEntity<Void> deleteHotelById(@PathVariable int id) {
         try {
-            // Call the service to delete the hotel
             String result = hotelService.deleteHotelById(id);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            if (result.contains("was deleted")) {
+                // Return 204 No Content if deletion was successful
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                // If the hotel was not found, return 404 Not Found
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
             // Return error response in case of failure
-            return new ResponseEntity<>("Error deleting hotel.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -64,20 +95,20 @@ public class HotelController {
             @PathVariable int id,
             @RequestBody Hotel hotelRequest) {
         try {
-            // Call the service to update the hotel
-            String result = hotelService.updateHotel(
-                    id, hotelRequest.getHotelName(),
+            // Llama al servicio para actualizar el hotel
+            String result = hotelService.updateHotel(id,
+                    hotelRequest.getHotelName(),
                     hotelRequest.getCity(),
                     hotelRequest.getCheckinDate(),
-                    hotelRequest.getPricePerNight()
-            );
-            if (result.contains("successfully updated")) {
+                    hotelRequest.getPricePerNight());
+
+            // Verifica si se ha actualizado correctamente
+            if (result.contains("was updated")) {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            // Return an error response in case of failure
             return new ResponseEntity<>("Error updating hotel.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

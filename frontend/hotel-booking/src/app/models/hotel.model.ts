@@ -1,8 +1,7 @@
 export interface Hotel {
-    id: number;
-    hotelName: string;
-    city: string;
-    checkinDate: string;  // Asegúrate de que el formato coincida con el de tu base de datos
-    pricePerNight: number;
-  }
-  
+  id?: number; // El id ahora es opcional
+  hotelName: string;
+  city: string;
+  checkinDate: string;
+  pricePerNight: number;
+}
