@@ -1,0 +1,28 @@
+# ==== Scalars (usaremos estos tipos; añadiremos las dependencias luego) ====
+scalar Date        # java.time.LocalDate
+scalar BigDecimal  # java.math.BigDecimal
+
+# ==== Tipos de dominio expuestos al Front ====
+type Hotel {
+    id: ID!
+    hotelName: String!
+    city: String!
+    checkinDate: Date
+    pricePerNight: BigDecimal!
+}
+
+type Flight {
+    id: ID!
+    cityOrigin: String!
+    destination: String!
+    departureDate: Date
+    departureTime: String
+    price: BigDecimal!
+}
+
+type Promotion {
+    id: ID!
+    title: String!
+    hotel: Hotel
+    flight: Flight
+}
