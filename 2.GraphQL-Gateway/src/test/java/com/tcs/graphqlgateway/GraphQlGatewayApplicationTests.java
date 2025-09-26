@@ -1,4 +1,4 @@
-package com.tcs.GraphQL.Gateway;
+package com.tcs.graphqlgateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
