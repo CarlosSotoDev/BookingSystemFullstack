@@ -1,0 +1,54 @@
+# ==== Scalars (usaremos estos tipos; añadiremos las dependencias luego) ====
+scalar Date        # java.time.LocalDate
+scalar BigDecimal  # java.math.BigDecimal
+
+# ==== Tipos de dominio expuestos al Front ====
+type Hotel {
+    id: ID!
+    hotelName: String!
+    city: String!
+    checkinDate: Date
+    pricePerNight: BigDecimal!
+}
+
+type Flight {
+    id: ID!
+    cityOrigin: String!
+    destination: String!
+    departureDate: Date
+    departureTime: String
+    price: BigDecimal!
+}
+
+type Promotion {
+    id: ID!
+    title: String!
+    hotel: Hotel
+    flight: Flight
+}
+
+# ==== Operaciones de lectura ====
+type Query {
+    # Lista de hoteles con filtros simples
+    hotels(city: String, maxPrice: BigDecimal): [Hotel!]!
+
+    # Lista de vuelos con filtros básicos
+    flights(origin: String, destination: String, date: Date): [Flight!]!
+
+    # Promociones que combinan hotel + vuelo
+    promotions: [Promotion!]!
+}
+
+# ==== Entradas y operaciones de escritura ====
+# ==== Argumentos sueltos, uno por uno (hotelName: String, city: String, ...). ====
+# ==== un objeto de entrada (input) que agrupe todos los campos. ====
+input CreateHotelInput {
+    hotelName: String!
+    city: String!
+    checkinDate: Date
+    pricePerNight: BigDecimal!
+}
+
+type Mutation {
+    createHotel(input: CreateHotelInput!): Hotel!
+}

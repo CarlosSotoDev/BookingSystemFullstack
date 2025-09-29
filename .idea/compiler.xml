@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="BookingHotelSystem" />
+        <module name="GraphQL-Gateway" />
+        <module name="APIGateway" />
+        <module name="Promotions" />
+        <module name="DiscoveryService" />
+        <module name="BookingFlightSystem" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="APIGateway" options="-parameters" />
+      <module name="BookingFlightSystem" options="-parameters" />
+      <module name="BookingHotelSystem" options="-parameters" />
+      <module name="DiscoveryService" options="-parameters" />
+      <module name="GraphQL-Gateway" options="-parameters" />
+      <module name="Promotions" options="-parameters" />
+    </option>
+  </component>
+</project>
